@@ -34,7 +34,7 @@ public class Exp2_S5_Pedro_Breit {
         MatrizAsientos.inicializarMatriz(aPlatea, "B");
         MatrizAsientos.inicializarMatriz(aGeneral, "C");
 
-        // Siclo while que permite permanecer en el menú principal
+        // Ciclo while que permite permanecer en el menú principal
         boolean continuar = true;
         while (continuar) {
             System.out.println("|--------Escenario--------|\n");
@@ -53,10 +53,12 @@ public class Exp2_S5_Pedro_Breit {
             String opcion = scan.nextLine();
 
             switch (opcion) {
+                // Seleccionar asiento
                 case "1":
                     System.out.print("Ingrese el asiento (ej: A1): ");
                     String asiento = scan.nextLine().toUpperCase();
 
+                    // Validacion de existencia del asiento o ver si ha sido seleccionado (ej: [A1]) o esta ocupado (ej: XXX)
                     if (MatrizAsientos.asientoDisponible(asiento) && asiento.length() <= 2 ) {
                         MatrizAsientos.reservarAsiento(asiento);
                         carrito.agregarAsiento(asiento);
@@ -66,9 +68,14 @@ public class Exp2_S5_Pedro_Breit {
                     }
                     break;
 
+                // Promociones
                 case "2":
+                    
+                    //Ciclo de validacion de respuesta (s o n)
                     boolean errorA = true;
                     while (errorA){
+                        
+                        //Ingreso de edad para promociones
                         System.out.print("Ingrese su edad: ");
                         int edad = Integer.parseInt(scan.nextLine());
                         if (edad <= 0 || edad > 120) {
@@ -90,73 +97,92 @@ public class Exp2_S5_Pedro_Breit {
                     };
                     break;
 
+                //Editar carrito
                 case "3":
+                    
+                    //Carrito vacio
                     if (carrito.estaVacio()) {
                         System.out.println("El carrito está vacío.");
                         break;
-                    }
-                    carrito.mostrarCarrito();
-                    boolean errorE = true;
-                    while (errorE){
-                        System.out.print("¿Desea eliminar un asiento? (s/n): ");
-                        String eliminar = scan.nextLine().toLowerCase();
+                    } else {
+                        carrito.mostrarCarrito();
+                        
+                        //Ciclo de validacion de respuesta (s o n)
+                        boolean errorE = true;
+                        while (errorE){
+                            System.out.print("¿Desea eliminar un asiento? (s/n): ");
+                            String eliminar = scan.nextLine().toLowerCase();
                     
-                        if (eliminar.equals("s")) {
-                            System.out.print("Ingrese asiento a eliminar: ");
-                            String asientoEliminar = scan.nextLine().toUpperCase();
-                            if (carrito.eliminarAsiento(asientoEliminar)) {
-                                MatrizAsientos.liberarAsiento(asientoEliminar);
-                                System.out.println("Asiento eliminado correctamente.");
+                            // Eliminar asiento
+                            if (eliminar.equals("s")) {
+                                System.out.print("Ingrese asiento a eliminar: ");
+                                String asientoEliminar = scan.nextLine().toUpperCase();
+                                
+                                //Verificar asiento en carrito
+                                if (carrito.eliminarAsiento(asientoEliminar)) {
+                                    MatrizAsientos.liberarAsiento(asientoEliminar);
+                                    System.out.println("Asiento eliminado correctamente.");
+                                } else {
+                                    System.out.println("Asiento no encontrado en el carrito.");
+                                }
+                                errorE = false;
+                            
+                            // No eliminar carrito
+                            } else if (eliminar.equals("n")){
+                                errorE = false;
+                                break;
                             } else {
-                                System.out.println("Asiento no encontrado en el carrito.");
+                                System.out.println("Error, vuelva a intentar.");
+                                errorE = true;
                             }
-                            errorE = false;
-                        } else if (eliminar.equals("n")){
-                            errorE = false;
-                            break;
-                        } else {
-                            System.out.println("Error, vuelva a intentar.");
-                            errorE = true;
-                        }
+                        };
                     }
                     break;
 
+                // Finalizar compra
                 case "4":
+                    
+                    // Carrito vacio;
                     if (carrito.estaVacio()) {
                         System.out.println("No hay asientos en el carrito.");
                         break;
-                    }
-                    System.out.println("CONFIRMACIÓN DE COMPRA:");
-                    carrito.mostrarCarrito();
+                    
+                    // Muestra asientos seleccionados con su respectivo precio, total sin descuento, descuento y total con descuento
+                    } else {
+                        System.out.println("===========================\n   CONFIRMACIÓN DE COMPRA  \n===========================");
+                        carrito.mostrarCarrito();
 
-                    int total = carrito.calcularTotal();
-                    double totalFinal = total - (total * descuentoActual);
+                        int total = carrito.calcularTotal();
+                        double totalFinal = total - (total * descuentoActual);
 
-                    System.out.println("Total sin descuento: .... $" + total);
-                    System.out.println("Descuento aplicado: ..... " + (descuentoActual * 100) + "%");
-                    System.out.println("Total a pagar: .......... $" + totalFinal);
+                        System.out.println("Total sin descuento: .... $" + total);
+                        System.out.println("Descuento aplicado: ..... " + (descuentoActual * 100) + "%");
+                        System.out.println("Total a pagar: .......... $" + totalFinal);
 
-                    boolean errorC = true;
-                    while (errorC){
-                        System.out.print("¿Desea confirmar la compra? (s/n): ");
-                        String confirmar = scan.nextLine().toLowerCase();
-                        if (confirmar.equals("s")) {
-                            for (String a : carrito.asientos) {
-                                MatrizAsientos.confirmarAsiento(a);
+                        // Validacion de respuesta (s o n)
+                        boolean errorC = true;
+                        while (errorC){
+                            System.out.print("¿Desea confirmar la compra? (s/n): ");
+                            String confirmar = scan.nextLine().toLowerCase();
+                            if (confirmar.equals("s")) {
+                                for (String a : carrito.asientos) {
+                                    MatrizAsientos.confirmarAsiento(a);
+                                }
+                                carrito.vaciarCarrito();
+                                System.out.println("Compra realizada con éxito. ¡Gracias por su compra!");
+                                errorC = false;
+                            } else if (confirmar.equals("n")) {
+                                System.out.println("Compra cancelada.");
+                                errorC = false;
+                            } else {
+                                System.out.println("Error, vuelva a intentar.");
+                                errorC = true;
                             }
-                            carrito.vaciarCarrito();
-                            System.out.println("Compra realizada con éxito. ¡Gracias por su compra!");
-                            errorC = false;
-                        } else if (confirmar.equals("n")) {
-                            System.out.println("Compra cancelada.");
-                            errorC = false;
-                        } else {
-                            System.out.println("Error, vuelva a intentar.");
-                            errorC = true;
-                        }
-                    };
+                        };
+                    }
                     break;
 
+                // Salir de la app y mensaje de despedida
                 case "5":
                     continuar = false;
                     System.out.println("Gracias por viisitar la app de compras de Teatro Moro. ¡Hasta pronto!");
@@ -169,6 +195,8 @@ public class Exp2_S5_Pedro_Breit {
     }
 
     static class MatrizAsientos {
+        
+        // Creacion de matriz de asientos
         public static void inicializarMatriz(String[][] matriz, String letra) {
             int contador = 1;
             for (int i = 0; i < matriz.length; i++) {
@@ -178,6 +206,7 @@ public class Exp2_S5_Pedro_Breit {
             }
         }
 
+        // Imprime la matriz en la consola
         public static void imprimirMatriz(String[][] matriz, String nombre) {
             System.out.println("-------SECCIÓN " + nombre.toUpperCase() + "----");
             for (String[] fila : matriz) {
@@ -188,29 +217,43 @@ public class Exp2_S5_Pedro_Breit {
             }
         }
 
+        // Busca en la matris el asiento seleccionado si esta devuelve true
         public static boolean asientoDisponible(String asiento) {
             return buscarYModificar(asiento, null);
         }
 
+        // Busca en la matriz el asiento seleccionado, si esta lo reemplaza por [asiento]
         public static void reservarAsiento(String asiento) {
             buscarYModificar(asiento, "[" + asiento + "]");
         }
 
+        // Busca el [asiento] y lo reemplaza por XXX, se aplica al confirmar la compra
         public static void confirmarAsiento(String asiento) {
             buscarYModificar("[" + asiento + "]", "XXX");
         }
 
+        // Busca el [asiento] y lo vuelve a su valor inicial, se aplica en eliminar del carrito
         public static void liberarAsiento(String asiento) {
-            String letra = asiento.substring(0, 1);
             buscarYModificar("[" + asiento + "]", asiento);
         }
 
+        // Boolean de buesqueda y modificacion de asientos
         private static boolean buscarYModificar(String objetivo, String nuevoValor) {
             String[][][] matrices = {aVIP, aPlatea, aGeneral};
+            
+            // Recorre las matrices
             for (String[][] matriz : matrices) {
+                
+                // Recorre fila de matices
                 for (int i = 0; i < matriz.length; i++) {
+                    
+                    // Recorre columna de matrices
                     for (int j = 0; j < matriz[i].length; j++) {
+                        
+                        // devuelve true si encuentra el valor objetivo
                         if (matriz[i][j].equals(objetivo)) {
+                            
+                            // Si el valor no es null cambia el valor de matriz[i][j] 
                             if (nuevoValor != null) matriz[i][j] = nuevoValor;
                             return true;
                         }
@@ -222,16 +265,22 @@ public class Exp2_S5_Pedro_Breit {
     }
 
     static class Carrito {
+        
+        // Lista de asientos en el carrito
         ArrayList<String> asientos = new ArrayList<>();
 
+        // Agrega asientos al carrito 
         public void agregarAsiento(String asiento) {
             asientos.add(asiento);
         }
 
+        // Muestra el carrito con el valor de cada asiento
         public void mostrarCarrito() {
             
             int precio = 0;
             System.out.println("Asientos en el carrito:");
+            
+            // Recorre los asientos en la lista y obtiene la plrimera letra para asignar el precio
             for (String asiento : asientos) {
                 switch (asiento.charAt(0)) {
                     case 'A': precio = P_VIP; break;
@@ -242,10 +291,12 @@ public class Exp2_S5_Pedro_Breit {
             }
         }
 
+        // Elimina los asients de la lista
         public boolean eliminarAsiento(String asiento) {
             return asientos.remove(asiento);
         }
 
+        // Calcula el valor total de los asientos en la lista
         public int calcularTotal() {
             int total = 0;
             for (String asiento : asientos) {
@@ -258,10 +309,12 @@ public class Exp2_S5_Pedro_Breit {
             return total;
         }
 
+        // Vacia el carrito 
         public void vaciarCarrito() {
             asientos.clear();
         }
 
+        // Boolean para confirmar que el carrito esta vacio
         public boolean estaVacio() {
             return asientos.isEmpty();
         }
